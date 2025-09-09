@@ -67,7 +67,6 @@ function getTime(timestamp) {
     return H+':'+i+':'+s;
 }
 
-
 /*
     打开图片预览，本方法依赖 jquery.js、viewer.css、viewer.js
     @param string img_src  图片地址，必须是一个可正常打开的图片地址
@@ -75,10 +74,10 @@ function getTime(timestamp) {
     @return boolean 打开结果，若img_src或Viewer对象不存在，则返回false，否则返回true
     使用方法：
         1)导入依赖文件
-            导入css文件 <link type="text/css"  rel="stylesheet" href="__STATIC__/Public/Admin/Viewerjs/1.9.0/dist/viewer.css" />
-            导入jquery文件  <script type="text/javascript" charset="utf-8" src="__STATIC__/Public/Admin/js/jquery-2.1.1.min.js" ></script>
-            导入jquery文件  <script type="text/javascript" charset="utf-8" src="__STATIC__/Public/Admin/Viewerjs/1.9.0/dist/viewer.js" ></script>
-            导入common文件  <script type="text/javascript" charset="utf-8" src="__STATIC__/Public/Admin/Common/js/common.js" ></script>
+            导入css文件 <link type="text/css"  rel="stylesheet" href="Viewerjs/1.9.0/dist/viewer.css" />
+            导入jquery文件  <script type="text/javascript" charset="utf-8" src="js/jquery-2.1.1.min.js" ></script>
+            导入jquery文件  <script type="text/javascript" charset="utf-8" src="Viewerjs/1.9.0/dist/viewer.js" ></script>
+            导入common文件  <script type="text/javascript" charset="utf-8" src="Common/js/common.js" ></script>
         2) 点击执行 openImage('http://xxxx.com/xxx.jpg');
             默认只能看图，没有旋转等控件，要显示所有控件则设置img_assembly为true，如：openImage('http://xxxx.com/xxx.jpg',true);
             打开blob文件也是一样的 onclick="openImage('blob:http://xxxx.com/xxxx-xxxx-xxxx');"
@@ -117,6 +116,8 @@ function openImage(img_src,img_assembly = false) {
     return true;
 }
 
+
+
 // 检验 undefined 和 null
 function isEmpty(obj) {
     if (!obj && obj !== 0 && obj !== '') {
@@ -138,8 +139,8 @@ function isEmpty(obj) {
     @param string  time  持续显示时间 单位毫秒 1000毫秒 = 1秒 |300000 毫秒 = 5秒
     @param string type   消息类型 目前只 default（灰色）、error（红色）、warning（黄色）、【默认】notice(绿色)
     使用方法：
-        1）导入css文件 <link href="__STATIC__/Public/Common/jquery-growl/css/jquery.growl.css"  type="text/css">
-        2）导入jquery文件 <script src="__STATIC__/Public/Common/jquery-growl/js/jquery.growl.js" type="text/javascript"></script>
+        1）导入css文件 <link href="jquery-growl/css/jquery.growl.css"  type="text/css">
+        2）导入jquery文件 <script src="jquery-growl/js/jquery.growl.js" type="text/javascript"></script>
         3）执行growlNotice('123')
  */
 function growlNotice(msg = '', time = 5000, type = 'notice'){
@@ -156,17 +157,17 @@ function growlNotice(msg = '', time = 5000, type = 'notice'){
 
 /**
  * 判断数组里是否有指定值
- * @param  string [search] 参数名
- * @param  array [array] url地址
- * @return boolean 判断结果
+ * @param  string [search] 要搜索的值
+ * @param  array [array] 数组
+ * @return boolean 判断结果  true存在   false不存在
  * 使用方法
  *     in_array('id',[1,2,3,4,5,'id']);//true
- *     in_array('6',[1,2,3,4,5,'name']);//false
+ *     in_array('100',[1,2,3,4,5,'name']);//false
  */
 
 function in_array(search,array){
     for(let i in array){
-        if(array[i]==search){
+        if(array[i] == search){
             return true;
         }
     }
@@ -174,6 +175,7 @@ function in_array(search,array){
 }
 
 /**
+ * url地址编码
  * param 将要转为URL参数字符串的对象
  * key URL参数字符串的前缀
  * encode true/false 是否进行URL编码,默认为true
@@ -194,45 +196,30 @@ function urlEncode(param, key, encode) {
     }
     return paramStr;
 }
-
-//字节转KB/M/G/T
-function getfilesize(size) {
-    if (!size)  return "";
-    let num = 1024.00; //byte
-    if (size < num)
+/*  
+    字节转大小计算文件大小函数(保留两位小数) 自带B/K/M/G/T单位字符
+    @param {int} size 文件字节大小
+    @return {string} 文件大小(保留两位小数) 自带B/K/M/G/T单位字符
+*/
+function bytetoSize(size) {
+    if (!size){
+        return "0B";
+    }
+    let num = 1024.00;//byte
+    if (size < num){
         return size + "B";
-    if (size < Math.pow(num, 2))
-        return (size / num).toFixed(2) + "KB"; //kb
-    if (size < Math.pow(num, 3))
-        return (size / Math.pow(num, 2)).toFixed(2) + "MB"; //M
-    if (size < Math.pow(num, 4))
+    }
+        
+    if (size < Math.pow(num, 2)){
+        return (size / num).toFixed(2) + "K"; //kb
+    }
+    if (size < Math.pow(num, 3)){
+        return (size / Math.pow(num, 2)).toFixed(2) + "M"; //M
+    }
+    if (size < Math.pow(num, 4)){
         return (size / Math.pow(num, 3)).toFixed(2) + "G"; //G
+    }
     return (size / Math.pow(num, 4)).toFixed(2) + "T"; //T
-}
-
-/**
- * 获取URL中的指定参数值
- * @param  string [queryName] 参数名
- * @param  string [url] url地址
- * @return string 参数值
- * 使用方法
- *      GetQueryValue('id','qq.com?id=123&name=小明')
- *      GetQueryValue('id')
- */
-function GetQueryValue(queryName,url) {
-    url = url || window.location.search;
-    queryName = queryName || '';
-    if (queryName == ''){
-        return '';
-    }
-    //截断问号前的字符
-    url = url.split("?")[1];
-    let reg = new RegExp("(^|&)" + queryName + "=([^&]*)(&|$)", "i");
-    let r = url.match(reg);
-    if ( r != null ){
-        return decodeURI(r[2]);
-    }
-    return '';
 }
 /**
  * 获取URL中的指定参数值
@@ -288,9 +275,8 @@ function GetQueryValueALL(urlStr) {
     }
     return theRequest;
 }
-
 /*
-获取文件名后缀
+获取文件名，带完整后缀
  */
 function getFileSuffix(fileName){
     if (fileName.lastIndexOf('.')  == -1){
@@ -312,13 +298,12 @@ function getFileName(fileName){
  * iv 是密钥偏移量，这个一般是接口返回的，或者前后端协定一致。
  * key 由于对称解密使用的算法是 AES-128-CBC算法，数据采用 PKCS#7 填充 ， 因此这里的 key 需要为16位
  * 依赖文件：
- <script src="__STATIC__/Public/Common/crypto-js/core.js"> /script>
- <script src="__STATIC__/Public/Common/crypto-js/cipher-core.js"> /script>
- <script src="__STATIC__/Public/Common/crypto-js/pad-zeropadding.js"> /script>
- <script src="__STATIC__/Public/Common/crypto-js/enc-base64.js"> /script>
- <script src="__STATIC__/Public/Common/crypto-js/aes.js"> /script>
+ <script src="crypto-js/core.js"> /script>
+ <script src="crypto-js/cipher-core.js"> /script>
+ <script src="crypto-js/pad-zeropadding.js"> /script>
+ <script src="crypto-js/enc-base64.js"> /script>
+ <script src="crypto-js/aes.js"> /script>
  */
-
 function AESencrypt(word, keyStr, ivStr) {
     let key = CryptoJS.enc.Utf8.parse(keyStr);
     let iv = CryptoJS.enc.Utf8.parse(ivStr);
@@ -330,15 +315,12 @@ function AESencrypt(word, keyStr, ivStr) {
     });
     return CryptoJS.enc.Base64.stringify(encrypted.ciphertext)
 }
-
 /**
- * base64解码
- author github@zong86
- time v1 2023-07-12 21:06:20
+    base64解码
+    time v1 2023-07-12 21:06:20
 
- @param str {string} 待解码文本
- @return {string} base64解码字符
-
+    @param str {string} 待解码文本
+    @return {string} base64解码字符
  */
 function base64decode(str){
     let base64DecodeChars = new Array(-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 62, -1, -1, -1, 63, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, -1, -1, -1, -1, -1, -1, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, -1, -1, -1, -1, -1, -1, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, -1, -1, -1, -1, -1);
@@ -387,10 +369,8 @@ function base64decode(str){
     }
     return out;
 }
-
 /**
     base64编码
-    author github@zong86
     time v1 2023-07-12 21:06:20
 
     @param str {string} 待编码文本
@@ -427,13 +407,10 @@ function base64encode(str){
     }
     return out;
 }
-
-
 /*
     rsa加密，本方法依赖JSEncrypt库
 
     响应值response处理  依赖 growlNotice方法
-    author github@zong86
     time v1 2023-07-12 21:06:20
 
     @param text {string} 待加密文本
@@ -448,7 +425,6 @@ function ras_encrypt(text, public_key) {
     crypt.setKey(public_key);
     return crypt.encrypt(text);
 }
-
 /*
  日期字符转时间戳
  date日期字符
@@ -458,8 +434,6 @@ function dateTotimestamp(date) {
     date = date || (new Date());
     return new Date(date).getTime()/1000;
 }
-
-
 /*
     html字符 转 html实体符号
     str 字符
@@ -501,8 +475,6 @@ function html_decode(str){
     s = s.replace(/<br\/>/g, "\n");
     return s;
 }
-
-
 /*
     转义特殊字符
  */
@@ -525,140 +497,145 @@ function html_decode_df(str) {
     s = s.replace(/\n/g, "\\n");
     return s;
 }
-
-/**
-    响应值response处理  依赖 growlNotice方法
-    author github@zong86
-    time v1 2023-07-12 21:06:20
-
-    @param response 响应体
-    @return {bool} 正常返回true，异常返回false
-
- */
-function response_code_analysis(response) {
-    if (response.code != 1){ //网络请求异常
-        // layer.msg(response.msg, {time:3000});
-        growlNotice(response.msg, 8000,'error');
-        return false;
-    }else if(response.data.code != 1){
-        // layer.msg(response.data.msg, {time:3000});
-        growlNotice(response.data.msg, 8000,'error');
-        return false;
-    }
-    return true;
-}
-
-/**
+/*
     请求网络
     本方法依赖jquery库，使用前请先引入jquery.js文件
     本方法通过包装jquery.ajax参数实现
-
-    author github@zong86
-    time v1 2023-07-12 21:06:20
-
+    版本 v1 2021-07-14 17:40:25
+    版本 v2 2022-03-26 17:01:52
+    版本 v3 2023-07-12 21:06:20
+    版本 v4 2025-09-09 19:23:10
+    
     @param {string} url 请求地址
     @param {object} parame 请求参数
-    可以是一个FormData 对象
-        let formData = new FormData();
-        formData.append('name','jack');
-        formData.append('age',21);
-        formData.append('filed',$('#filed')[0].files[0]);//添加文件
-    也可以是一个键值对象
-        let formData = {
-            name:'jack',
-            age:21,
-        }
+                        键值对象
+                        let formData = {
+                            name:'jack',
+                            age:21,
+                        }
+                        或者FormData对象
+                        let formData = new FormData();
+                        formData.set('name','jack');
+                        formData.set('age',21);
+                        formData.set('file1',$('#filed')[0].files[0]);//添加文件
+                        formData.set('file2',$('#filed')[0].files[0],'tmp.txt');//添加文件并自定义文件名
     @param {string} method 请求方法 不区分大小写  可选 POST 和 GET
-    @param {Object} requestHeader 自定义请求头，一个键值对的对象，不填默认空对象。
-                                       注意1：键名不能带底杠（_） 符号，且避免区分大小写，服务器端接收时将首字母自动转大写，会造成混乱
-                                       注意2：按照W3C组织规定有部分名字不可自定义（无效），原因详询https://www.w3.org/TR/2010/CR-XMLHttpRequest-20100803/#the-setrequestheader-method
+    @param {object} requestHeader 自定义请求头，一个键值对的对象，不填默认空对象。
+                                注意1：键名不能带底杠（_） 符号，且避免区分大小写，服务器端接收时将首字母自动转大写，会造成混乱
+                                注意2：按照W3C组织规定有部分名字不可自定义（无效），原因详询https://www.w3.org/TR/2010/CR-XMLHttpRequest-20100803/#the-setrequestheader-method
     @param {int} timeout 超时时间 单位：秒，默认25  取值范围： 0-360   上传文件时要置为0，表示取消超时时间，否则可能会报499 400 错误
     @param {string} lockName 锁名称 默认空字符（不锁）  设置非空字符时后，方法内部会上锁，上锁期间多次重复执行（例如双击）本函数会返 {code:4,msg:'操作过快，请稍后',httpCode:0}
-                             只有上一次请求结束（解锁）后才可开始下一次请求，用于防双击或强一致性请求等场景使用，一般不用设置
+                            只有上一次请求结束（解锁）后才可开始下一次请求，用于防双击或强一致性请求等场景使用，一般不用设置
     @param {string} returnType 返回值解析方式 默认json 可选 json jsonp text xml html script
-    @param {Object} uploadCallback  obj  上传回调，一个回调函数，可获取上传进度，参数里有：
+    @param {object} uploadCallback  obj  上传回调，一个回调函数，可获取上传进度，参数里有：
                                         total:总共需要上传的字节
                                         loaded:已上传的字节
                                         upload_percentage:上传的进度百分比 取值：0-100
-    @return {Object} 返回一个Promise对象 成功触发then() 失败触发 catch()
+    @return {object} 返回一个Promise对象 成功触发then() 失败触发 catch()
                     不管成功或失败，返回值都有固定结构：{code:0,msg:'',data:{},httpCode:0}，字段解释：
                         code:联网结果  1成功（此处仅代表网络连接成功，并不是业务层面成功，具体得获取到返回值在上层自行判断）  0失败
                         msg: 联网失败时的原因，成功时统一返回【请求成功】，目前有：
-                            请求成功
-                            url参数错误
-                            timeout参数错误
-                            操作过快，请稍后
-                            网络连接超时
-                            网络连接失败（可能为url错误、option请求或跨域请求被拦截、本机网络断开等，详情请检查控制台报错信息）
-                            程序异常
+                                请求成功
+                                url参数错误
+                                timeout参数错误
+                                操作过快，请稍后
+                                网络连接超时
+                                网络连接失败（可能为url错误、option请求或跨域请求被拦截、本机网络断开等，详情请检查控制台报错信息）
+                                程序异常
                         data:返回值
                         httpCode:http状态码，如200、302、500，0表示联网失败或发生异常
-
     使用方法：
             极简get请求
-                requestNetworkV1('https://qq.com').then(function(response){
-                    console.log(response)
-                }).catch(function(error){ //网络请求失败
-                    let error_msg = error.msg || error.message;
-                    console.log(error_msg)
-                });
+                    requestNetwork('https://qq.com').then(function(response){
+                        console.log(response)
+                    }).catch(function(error){ //网络请求失败
+                        let error_msg = error.msg || error.message;
+                        console.log(error_msg)
+                    });
             post文本和文件组合请求
-                let formData = new FormData();
-                formData.append('name','zhangsan');
-                formData.append('age',21);
-                formData.append('filed',$('#filed')[0].files[0]);//添加文件
-                let requestHeader = {
-                    'header1':111,
-                    'header2':222,
-                };
-                let timeout = 25;
-                let lockName = 'lock_1';
-                let returnType = 'json';
-                let uploadCallback = function (total,loaded,upload_percentage) {
-                    console.log(total,loaded,upload_percentage)
-                };
-                requestNetwork('https://qq.com',formData,'post',requestHeader,timeout,lockName,returnType,uploadCallback).then(function(response){
-                    console.log(response)
-                }).catch(function(error){ //网络请求失败
-                    let error_msg = error.msg || error.message;
-                    console.log(error_msg)
-                });
+                    let formData = new FormData();
+                    formData.set('name','zhangsan');
+                    formData.set('age',21);
+                    formData.set('file1',$('#filed')[0].files[0]);//添加文件
+                    formData.set('file2',$('#filed')[0].files[0],'tmp.txt');//添加文件并自定义文件名
+                    let requestHeader = {
+                        'header1':111,
+                        'header2':222,
+                    };
+                    let timeout = 25;
+                    let lockName = 'lock_1';
+                    let returnType = 'json';
+                    let uploadCallback = function (total,loaded,upload_percentage) {
+                        console.log(total,loaded,upload_percentage)
+                    };
+                    requestNetwork('https://qq.com',formData,'post',requestHeader,timeout,lockName,returnType,uploadCallback).then(function(response){
+                        console.log(response)
+                    }).catch(function(error){ //网络请求失败
+                        let error_msg = error.msg || error.message;
+                        console.log(error_msg)
+                    });
             请求时上锁
-                let formData = new FormData();
-                formData.append('name','zhangsan');
-                formData.append('age',21);
-                formData.append('filed',$('#filed')[0].files[0]);//添加文件
-                let requestHeader = {
-                    'header1':111,
-                    'header2':222,
-                };
-                let timeout = 10;
-                let lockName = 'lock_1';//需要上锁
-                requestNetwork('https://qq.com',formData,'post',requestHeader,timeout,lockName).then(function(response){
-                    console.log(response)
-                }).catch(function(error){ //网络请求失败
-                    let error_msg = error.msg || error.message;
-                    console.log(error_msg)
-                });
+                    let formData = new FormData();
+                    formData.set('name','zhangsan');
+                    formData.set('age',21);
+                    formData.set('filed',$('#filed')[0].files[0]);//添加文件
+                    let requestHeader = {
+                        'header1':111,
+                        'header2':222,
+                    };
+                    let timeout = 10;
+                    let lockName = 'lock_1';//需要上锁
+                    requestNetwork('https://qq.com',formData,'post',requestHeader,timeout,lockName).then(function(response){
+                        console.log(response)
+                    }).catch(function(error){ //网络请求失败
+                        let error_msg = error.msg || error.message;
+                        console.log(error_msg)
+                    });
             自定义请求头
-                let formData = new FormData();
-                formData.append('name','zhangsan');
-                formData.append('age',21);
-                let requestHeader = {
-                    // 注意1：键名不能带底杠（_） 符号，且避免区分大小写，服务器端接收时将首字母自动转大写，会造成混乱
-                    // 注意2：按照W3C组织规定有部分名字不可自定义（无效），原因详询https://www.w3.org/TR/2010/CR-XMLHttpRequest-20100803/#the-setrequestheader-method
-                    'header1':111,//自定义头1
-                    'header2':222,//自定义头2
-                };
-                requestNetwork('https://qq.com',formData,'post',requestHeader).then(function(response){
-                    console.log(response)
-                }).catch(function(error){ //网络请求失败
-                    let error_msg = error.msg || error.message;
-                    console.log(error_msg)
-                });
+                    let formData = new FormData();
+                    formData.set('name','zhangsan');
+                    formData.set('age',21);
+                    let requestHeader = {
+                        // 注意1：键名不能带底杠（_） 符号，且避免区分大小写，服务器端接收时将首字母自动转大写，会造成混乱
+                        // 注意2：按照W3C组织规定有部分名字不可自定义（无效），原因详询https://www.w3.org/TR/2010/CR-XMLHttpRequest-20100803/#the-setrequestheader-method
+                        'header1':111,//自定义头1
+                        'header2':222,//自定义头2
+                    };
+                    requestNetwork('https://qq.com',formData,'post',requestHeader).then(function(response){
+                        console.log(response)
+                    }).catch(function(error){ //网络请求失败
+                        let error_msg = error.msg || error.message;
+                        console.log(error_msg)
+                    });
+            取消请求
+                    let xhr_tmp = null;
+                    let formData = new FormData();
+                    formData.set('name','zhangsan');
+                    formData.set('age',21);
+                    formData.set('file1',$('#filed')[0].files[0]);//添加文件
+                    formData.set('file2',$('#filed')[0].files[0],'tmp.txt');//添加文件并自定义文件名
+                    let requestHeader = {
+                        'header1':111,
+                        'header2':222,
+                    };
+                    let timeout = 25;
+                    let lockName = 'lock_1';
+                    let returnType = 'json';
+                    let uploadCallback = function (total,loaded,upload_percentage,xhr) {
+                        console.log(total,loaded,upload_percentage)
+                        xhr_tmp = xhr
+                    };
+                    requestNetwork('https://qq.com',formData,'post',requestHeader,timeout,lockName,returnType,uploadCallback).then(function(response){
+                        console.log(response)
+                    }).catch(function(error){ //网络请求失败
+                        let error_msg = error.msg || error.message;
+                        console.log(error_msg)
+                    });
+                    //取消请求
+                    xhr_tmp.abort()
 
 */
-function requestNetworkV1(url, method = 'GET', parame = {}, requestHeader = {}, timeout = 25, lockName = '', returnType = 'json', uploadCallback = null){
+function requestNetwork(url, method = 'GET', parame = {}, requestHeader = {}, timeout = 25, lockName = '', returnType = 'json', uploadCallback = null){
     return new Promise(function(resolve, reject){
         if (!url || url.length < 1){ //请求地址必填
             reject({code:0, msg:'url参数错误', data:{},httpCode:0});
@@ -669,10 +646,11 @@ function requestNetworkV1(url, method = 'GET', parame = {}, requestHeader = {}, 
             return '';
         }
         let isLock = false;
+        let xhr = {};//ajax实体
         if (lockName != ''){
             isLock = true;
             if(typeof request_network_lock_a8sk7d0vp0609 == 'undefined'){
-                request_network_lock_a8sk7d0vp0609 = {};
+            request_network_lock_a8sk7d0vp0609 = {};
             }
             if ((typeof request_network_lock_a8sk7d0vp0609[lockName] == 'boolean') && (request_network_lock_a8sk7d0vp0609[lockName] == true)) { //已存在
                 reject({code:0,msg:'操作过快，请稍后',data:{},httpCode:0});
@@ -708,7 +686,7 @@ function requestNetworkV1(url, method = 'GET', parame = {}, requestHeader = {}, 
             }
         };
         try {
-            $.ajax({
+            xhr = $.ajax({
                 url: url,//请求地址
                 type: methodType,//请求方式
                 timeout: timeoutD,//ajax 联网超时时间 默认10秒  注意，有文件上传时要置为0 否则服务器可能会报499 400 错误
@@ -720,12 +698,12 @@ function requestNetworkV1(url, method = 'GET', parame = {}, requestHeader = {}, 
                     if(typeof uploadCallback !== 'function'){ //判断监听函数是否为函数
                         return;
                     }
-                    percentage = Math.floor(( e.loaded / e.total)*100);
+                    percentage = Math.floor((e.loaded / e.total) * 100);
                     if (percentage == upload_percentage){
                         return true;
                     }
                     upload_percentage = percentage;
-                    uploadCallback(e.total,e.loaded,upload_percentage);
+                    uploadCallback(e.total,e.loaded,upload_percentage,xhr);
                 }),
                 success: function(data,readyState,httpData){ //请求成功后调用
                     isLock && (request_network_lock_a8sk7d0vp0609[lockName] = false);//解锁
@@ -756,5 +734,3 @@ function requestNetworkV1(url, method = 'GET', parame = {}, requestHeader = {}, 
         }
     });
 }
-
-
